@@ -1,9 +1,10 @@
 package org.example.kiosk.lv4;
 
 public class MenuItem {
-    private final String name;
-    private final double price;
-    private final String description;
+
+    private String name;
+    private double price;
+    private String description;
 
     MenuItem (String name, double price, String description) {
         this.name = name;
@@ -21,5 +22,17 @@ public class MenuItem {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
