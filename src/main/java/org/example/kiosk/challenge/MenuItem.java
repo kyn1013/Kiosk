@@ -1,4 +1,4 @@
-package org.example.kiosk.lv4;
+package org.example.kiosk.challenge;
 
 public class MenuItem {
 
