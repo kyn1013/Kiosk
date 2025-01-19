@@ -2,6 +2,7 @@ package org.example.kiosk.challenge;
 
 import org.example.kiosk.common.exception.InvalidInputException;
 import org.example.kiosk.common.exception.InvalidInputRangeException;
+import org.example.kiosk.common.exception.MenuItemNotFoundException;
 
 import java.util.*;
 
@@ -56,6 +57,12 @@ public class Kiosk {
                             break;
                         } else if ("2".equals(orderCompleteIndex)) {
                             continue;
+                        } else if ("3".equals(orderCompleteIndex)){
+                            System.out.print("삭제할 메뉴 이름을 입력하세요 : ");
+                            String name = sc.next();
+                            cart.deleteCartItem(name);
+                            System.out.print("메뉴를 삭제했습니다!");
+                            continue;
                         } else {
                             throw new InvalidInputRangeException();
                         }
@@ -98,7 +105,7 @@ public class Kiosk {
                     }
                 }
 
-            } catch (InvalidInputException | InvalidInputRangeException e){
+            } catch (InvalidInputException | InvalidInputRangeException | MenuItemNotFoundException e){
                 System.out.println(e.getMessage());
             }
         }
@@ -129,7 +136,7 @@ public class Kiosk {
         System.out.println();
         cart.showTotal();
         System.out.println();
-        System.out.println("1. 주문      2. 메뉴판");
+        System.out.println("1. 주문      2. 메뉴판      3. 메뉴 삭제");
     }
 
     public void setIndexList() {

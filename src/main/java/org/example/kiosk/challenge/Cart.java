@@ -1,7 +1,10 @@
 package org.example.kiosk.challenge;
 
+import org.example.kiosk.common.exception.MenuItemNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Cart {
     // 장바구니에 넣은 선택한 물건을 담는 리스트
@@ -11,9 +14,22 @@ public class Cart {
     public void showCartItems() {
         this.total = 0;
         System.out.println("[ ORDER MENU ]");
-        for (MenuItem cartItem : cartItems) {
+        cartItems.forEach(cartItem -> {
             System.out.println(cartItem.getName() + " | W" + cartItem.getPrice() + " | " + cartItem.getDescription());
-            this.total += cartItem.getPrice();
+            total += cartItem.getPrice();
+        });
+    }
+
+    public void deleteCartItem(String name) throws MenuItemNotFoundException{
+        boolean exists = cartItems.stream()
+                .anyMatch(cartItem -> cartItem.getName().equals(name.toLowerCase()));  // 해당 이름이 존재하는지 확인
+
+        if (exists) {
+            cartItems = cartItems.stream()
+                    .filter(cartItem -> !cartItem.getName().equals(name))
+                    .collect(Collectors.toList());
+        } else {
+            throw new MenuItemNotFoundException();
         }
     }
 
@@ -27,19 +43,19 @@ public class Cart {
     }
 
     public void addCart(MenuItem menuItem){
-        this.cartItems.add(menuItem);
+        cartItems.add(menuItem);
     }
 
     public void cancelCart() {
-        this.cartItems.clear();
+        cartItems.clear();
     }
 
     public double getTotal() {
-        return this.total;
+        return total;
     }
 
     public boolean isCartEmpty(){
-        return this.cartItems.isEmpty();
+        return cartItems.isEmpty();
     }
 
 }
