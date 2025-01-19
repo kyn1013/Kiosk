@@ -11,7 +11,7 @@ public class Kiosk {
     private final List<Menu> menus;
     private final Cart cart = new Cart();
     private final String NUMBER_REG = "[0-9]+";
-    private final List<Integer> indexList = new ArrayList<>(); // 카테고리 인덱스 리스트임 1 2 3
+    private final List<Integer> categoryIndexList = new ArrayList<>(); // 카테고리 인덱스 리스트임 1 2 3
     private final List<Integer> orderIndexList = new ArrayList<>(); // 카테고리 아래 오더메뉴 리스트 4 5
     private int orderIndex;
     private int cancelIndex;
@@ -22,12 +22,11 @@ public class Kiosk {
 
     public void start() {
         Scanner sc = new Scanner(System.in);
-        setIndexList();
+        setCategoryIndexList();
         setOrderIndex();
 
         while (true) {
             try {
-                System.out.println();
                 showCategories();
                 if (!cart.isCartEmpty()) {
                     showConfirmOrderMsg();
@@ -42,7 +41,7 @@ public class Kiosk {
                 validInputValue(inputCategoryIndex);
                 int categoryIndex = Integer.parseInt(inputCategoryIndex);
 
-                // 4나 5를 누름
+                // 4나 5를 누름 => 넘어가
                 if (orderIndexList.contains(categoryIndex)) {
                     // 4번 누르기
                     if (categoryIndex == orderIndex){
@@ -61,7 +60,6 @@ public class Kiosk {
                             System.out.print("삭제할 메뉴 이름을 입력하세요 : ");
                             String name = sc.next();
                             cart.deleteCartItem(name);
-                            System.out.print("메뉴를 삭제했습니다!");
                             continue;
                         } else {
                             throw new InvalidInputRangeException();
@@ -75,10 +73,10 @@ public class Kiosk {
                     }
                 }
 
-                validInputRangeValue(categoryIndex, this.getIndexList());
+                validInputRangeValue(categoryIndex, this.getCategoryIndexList());
 
                 Menu menu = this.menus.get(categoryIndex-1);
-                showMainMenes(menu);
+                showSelectedCategoryMenu(menu);
 
                 while (true){
                     String inputMenuIndex = sc.next();
@@ -112,8 +110,22 @@ public class Kiosk {
 
     }
 
-    public List<Integer> getIndexList() {
-        return this.indexList;
+    public void setCategoryIndexList() {
+        for(int i = 0; i < menus.size(); i++){
+            categoryIndexList.add(i+1);
+        }
+    }
+
+    public void setOrderIndex() {
+        int maxIndex = Collections.max(categoryIndexList);
+        orderIndexList.add(maxIndex + 1);
+        orderIndexList.add(maxIndex + 2);
+        orderIndex = maxIndex + 1;
+        cancelIndex = maxIndex + 2;
+    }
+
+    public List<Integer> getCategoryIndexList() {
+        return this.categoryIndexList;
     }
 
     public void showConfirmOrderMsg() {
@@ -124,33 +136,15 @@ public class Kiosk {
 
     public void showCartAddMsg(MenuItem menuItem) {
         System.out.println("선택한 메뉴 : " + menuItem.getName() + " | W " + menuItem.getPrice() + " | " + menuItem.getDescription());
-        System.out.println();
         System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
         System.out.println("1. 확인       2. 취소");
     }
 
     public void showOrderListMsg() {
         System.out.println("아래와 같이 주문 하시겠습니까?");
-        System.out.println();
         cart.showCartItems();
-        System.out.println();
-        cart.showTotal();
-        System.out.println();
+        cart.showTotalCost();
         System.out.println("1. 주문      2. 메뉴판      3. 메뉴 삭제");
-    }
-
-    public void setIndexList() {
-        for(int i = 0; i < menus.size(); i++){
-            indexList.add(i+1);
-        }
-    }
-
-    public void setOrderIndex() {
-        int maxIndex = Collections.max(indexList);
-        orderIndexList.add(maxIndex + 1);
-        orderIndexList.add(maxIndex + 2);
-        orderIndex = maxIndex + 1;
-        cancelIndex = maxIndex + 2;
     }
 
     private void showCategories() {
@@ -161,7 +155,7 @@ public class Kiosk {
         System.out.println("0. 종료 | 종료");
     }
 
-    private void showMainMenes(Menu menu) {
+    private void showSelectedCategoryMenu(Menu menu) {
         System.out.println("[ " + menu.getCategory()+ " MENU ]");
         menu.showMenuItems();
         System.out.println("0. 뒤로가기");

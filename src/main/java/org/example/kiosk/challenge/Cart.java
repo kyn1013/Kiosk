@@ -4,6 +4,7 @@ import org.example.kiosk.common.exception.MenuItemNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Cart {
@@ -21,10 +22,10 @@ public class Cart {
     }
 
     public void deleteCartItem(String name) throws MenuItemNotFoundException{
-        boolean exists = cartItems.stream()
-                .anyMatch(cartItem -> cartItem.getName().equals(name.toLowerCase()));  // 해당 이름이 존재하는지 확인
+        boolean existsItemName = cartItems.stream()
+                .anyMatch(cartItem -> cartItem.getName().equals(name.toLowerCase()));
 
-        if (exists) {
+        if (existsItemName) {
             cartItems = cartItems.stream()
                     .filter(cartItem -> !cartItem.getName().equals(name))
                     .collect(Collectors.toList());
@@ -33,7 +34,7 @@ public class Cart {
         }
     }
 
-    public void showTotal() {
+    public void showTotalCost() {
         System.out.println("[ Orders ]");
         System.out.println("W " + getTotal());
     }
