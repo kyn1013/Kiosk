@@ -22,8 +22,8 @@ public class Cart {
         System.out.println("W " + getTotal());
     }
 
-    public void completeOrder() {
-        System.out.println("주문이 완료되었습니다. 금액은 W" + getTotal() + " 입니다");
+    public void completeOrder(double total) {
+        System.out.println("주문이 완료되었습니다. 금액은 W" + total + " 입니다");
     }
 
     public void addCart(MenuItem menuItem){

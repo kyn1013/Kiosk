@@ -45,16 +45,14 @@ public class Kiosk {
                 if (orderIndexList.contains(categoryIndex)) {
                     // 4번 누르기
                     if (categoryIndex == orderIndex){
-                        System.out.println("아래와 같이 주문 하시겠습니까?");
-                        System.out.println();
-                        cart.showCartItems();
-                        System.out.println();
-                        cart.showTotal();
-                        System.out.println();
-                        System.out.println("1. 주문      2. 메뉴판");
+                        showOrderListMsg();
                         String orderCompleteIndex = sc.next();
                         if ("1".equals(orderCompleteIndex)){
-                            cart.completeOrder();
+                            //여기서 할인 정보를 보여줘야 함
+                            showDiscountInformation();
+                            String input = sc.next();
+                            double total = Discount.fromDiscount(input, cart.getTotal());
+                            cart.completeOrder(total);
                             break;
                         } else if ("2".equals(orderCompleteIndex)) {
                             continue;
@@ -87,10 +85,7 @@ public class Kiosk {
                     validInputRangeValue(menuIndex, menu.getMenuItemIndexList());
 
                     MenuItem menuItem = menu.getMenuItems().get(menuIndex - 1);
-                    System.out.println("선택한 메뉴 : " + menuItem.getName() + " | W " + menuItem.getPrice() + " | " + menuItem.getDescription());
-                    System.out.println();
-                    System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
-                    System.out.println("1. 확인       2. 취소");
+                    showCartAddMsg(menuItem);
                     String inputCartIndex = sc.next();
                     if ("1".equals(inputCartIndex)){
                         cart.addCart(menuItem);
@@ -120,6 +115,23 @@ public class Kiosk {
         System.out.println(orderIndexList.get(1) + ". Cancel       | 진행중인 주문을 취소합니다.");
     }
 
+    public void showCartAddMsg(MenuItem menuItem) {
+        System.out.println("선택한 메뉴 : " + menuItem.getName() + " | W " + menuItem.getPrice() + " | " + menuItem.getDescription());
+        System.out.println();
+        System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
+        System.out.println("1. 확인       2. 취소");
+    }
+
+    public void showOrderListMsg() {
+        System.out.println("아래와 같이 주문 하시겠습니까?");
+        System.out.println();
+        cart.showCartItems();
+        System.out.println();
+        cart.showTotal();
+        System.out.println();
+        System.out.println("1. 주문      2. 메뉴판");
+    }
+
     public void setIndexList() {
         for(int i = 0; i < menus.size(); i++){
             indexList.add(i+1);
@@ -147,6 +159,12 @@ public class Kiosk {
         menu.showMenuItems();
         System.out.println("0. 뒤로가기");
     }
+
+    private void showDiscountInformation() {
+        System.out.println("[ 할인 정보를 입력해주세요. ]");
+        Discount.showInformation();
+    }
+
     private void validInputValue(String inputIndex) throws InvalidInputException {
         if (!inputIndex.matches(NUMBER_REG)){
             throw new InvalidInputException();
