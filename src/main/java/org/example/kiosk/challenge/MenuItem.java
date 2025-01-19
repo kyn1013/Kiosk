@@ -7,7 +7,7 @@ public class MenuItem {
     private String description;
 
     MenuItem (String name, double price, String description) {
-        this.name = name;
+        this.name = name.toLowerCase();
         this.price = price;
         this.description = description;
     }
