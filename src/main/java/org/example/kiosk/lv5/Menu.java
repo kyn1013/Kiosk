@@ -15,11 +15,20 @@ public class Menu {
     }
 
     public void showMenuItems(){
+        if (menuItemIndexList.isEmpty()){
+            setMenuItemIndex();
+        }
         for(int i = 0; i < menuItems.size(); i++){
             System.out.println( i + 1 + ". " + menuItems.get(i).getName() + " | W " + menuItems.get(i).getPrice() + " | " + menuItems.get(i).getDescription());
+        }
+    }
+
+    public void setMenuItemIndex() {
+        for(int i = 0; i < menuItems.size(); i++){
             menuItemIndexList.add(i+1);
         }
     }
+
 
     public List<MenuItem> getMenuItems(){
         return this.menuItems;

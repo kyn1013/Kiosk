@@ -19,7 +19,7 @@ public class Kiosk {
 
     public void start() {
         Scanner sc = new Scanner(System.in);
-
+        setIndexList();
         while (true) {
             try {
                 showCategories();
@@ -67,7 +67,6 @@ public class Kiosk {
         System.out.println("[ MAIN MENU ]");
         for (int i = 0; i < menus.size(); i++) {
             System.out.println(i + 1 + ". " + this.menus.get(i).getCategory());
-            this.indexList.add(i);
         }
         System.out.println("0. 종료 | 종료");
     }
@@ -77,6 +76,13 @@ public class Kiosk {
         menu.showMenuItems();
         System.out.println("0. 뒤로가기");
     }
+
+    public void setIndexList() {
+        for(int i = 0; i < menus.size(); i++){
+            indexList.add(i+1);
+        }
+    }
+
     private void validInputValue(String inputIndex) throws InvalidInputException {
         if (!inputIndex.matches(NUMBER_REG)){
             throw new InvalidInputException();

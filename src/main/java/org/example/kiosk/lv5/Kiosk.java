@@ -19,7 +19,7 @@ public class Kiosk {
 
     public void start() {
         Scanner sc = new Scanner(System.in);
-
+        setIndexList();
         while (true) {
             try {
                 showCategories();
@@ -63,11 +63,16 @@ public class Kiosk {
         return this.indexList;
     }
 
+    public void setIndexList() {
+        for(int i = 0; i < menus.size(); i++){
+            indexList.add(i+1);
+        }
+    }
+
     private void showCategories() {
         System.out.println("[ MAIN MENU ]");
         for (int i = 0; i < menus.size(); i++) {
             System.out.println(i + 1 + ". " + this.menus.get(i).getCategory());
-            this.indexList.add(i);
         }
         System.out.println("0. 종료 | 종료");
     }
