@@ -131,6 +131,7 @@ public class Kiosk {
         String input = sc.next();
         double total = Discount.fromDiscount(input, cart.getTotal());
         System.out.println("주문이 완료되었습니다. 금액은 W" + total + " 입니다");
+        cart.cancelCart();
     }
 
     public List<Integer> getCategoryIndexList() {
