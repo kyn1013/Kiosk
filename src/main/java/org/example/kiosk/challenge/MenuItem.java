@@ -2,9 +2,9 @@ package org.example.kiosk.challenge;
 
 public class MenuItem {
 
-    private String name;
-    private double price;
-    private String description;
+    private String name; // 메뉴 이름
+    private double price; // 메뉴 가격
+    private String description; // 메뉴 설명
 
     MenuItem (String name, double price, String description) {
         this.name = name.toLowerCase();

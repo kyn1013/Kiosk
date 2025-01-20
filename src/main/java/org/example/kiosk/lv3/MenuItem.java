@@ -1,9 +1,9 @@
 package org.example.kiosk.lv3;
 
 public class MenuItem {
-    private final String name;
-    private final double price;
-    private final String description;
+    private final String name; // 메뉴 이름
+    private final double price; // 메뉴 가격
+    private final String description; // 메뉴 설명
 
     MenuItem (String name, double price, String description) {
         this.name = name;
