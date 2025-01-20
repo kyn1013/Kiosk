@@ -8,13 +8,14 @@ public class Kiosk {
 
     public Kiosk(List<MenuItem> menuItems) {
         this.menuItems = menuItems;
-    }
+    } // 메뉴를 담을 리스트
 
     public void start() {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
             try {
+                // 메뉴 출력
                 System.out.println("[ SHAKESHACK MENU ]");
                 int index = 1;
                 for (MenuItem menuItem : this.menuItems) {
@@ -29,6 +30,7 @@ public class Kiosk {
                     break;
                 }
 
+                // 해당 인덱스 값에 맞게 리스트에서 조회한 후, 선택 메시지 출력
                 switch (inputValue) {
                     case "1" -> System.out.println(menuItems.get(0).getName() + "을 선택하셨습니다!");
                     case "2" -> System.out.println(menuItems.get(1).getName() + "을 선택하셨습니다!");
@@ -37,7 +39,7 @@ public class Kiosk {
                     default -> throw new IllegalStateException("유효하지 않은 값을 입력하셨습니다!");
                 }
             } catch (IllegalStateException e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
 
         }

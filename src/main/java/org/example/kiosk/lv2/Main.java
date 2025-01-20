@@ -16,6 +16,7 @@ public class Main {
 
         while (true) {
             try {
+                // 메뉴 출력
                 System.out.println("[ SHAKESHACK MENU ]");
                 int index = 1;
                 for (MenuItem menuItem : menuItems){
@@ -29,6 +30,7 @@ public class Main {
                     break;
                 }
 
+                // 해당 인덱스 값에 맞게 메뉴 선택 메시지 출력
                 switch (inputValue) {
                     case "1" -> System.out.println(menuItems.get(0).getName() + "을 선택하셨습니다!");
                     case "2" -> System.out.println(menuItems.get(1).getName() + "을 선택하셨습니다!");

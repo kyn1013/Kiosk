@@ -10,62 +10,60 @@ public class Kiosk {
 
     private final List<Menu> menus;
     private final Cart cart = new Cart();
-    private final String NUMBER_REG = "[0-9]+";
-    private final List<Integer> categoryIndexList = new ArrayList<>(); // 카테고리 인덱스 리스트임 1 2 3
-    private final List<Integer> orderIndexList = new ArrayList<>(); // 카테고리 아래 오더메뉴 리스트 4 5
-    private int orderIndex;
-    private int cancelIndex;
+    private final String NUMBER_REG = "[0-9]+"; // 숫자만 입력했는지 검증하기 위한 정규표현식
+    private final List<Integer> categoryIndexList = new ArrayList<>(); // [ MAIN MENU ] 창에서 보여지는 카테고리 인덱스 리스트 [1, 2, 3]
+    private final List<Integer> orderIndexList = new ArrayList<>(); // [ ORDER MENU ] 창에 해당하는 메뉴 인덱스 리스트 [4, 5]
+    private int orderIndex; // [ ORDER MENU ] 창에서 메뉴 주문 인덱스 ex) 4
+    private int cancelIndex; // [ ORDER MENU ] 창에서 주문 취소 인덱스 ex) 5
+    private Scanner sc = new Scanner(System.in);
 
     public Kiosk(List<Menu> menus) {
         this.menus = menus;
     }
 
     public void start() {
-        Scanner sc = new Scanner(System.in);
-        setCategoryIndexList();
-        setOrderIndex();
+        setCategoryIndexList(); // 메인 메뉴에서 보여지는 카테고리 인덱스 리스트 세팅 ([ MAIN MENU ])
+        setOrderIndex(); // 주문을 할 건지 물어볼 때 보여지는 인덱스 리스트 세팅 ([ ORDER MENU ])
 
         while (true) {
             try {
+                // 카테고리 출력
                 showCategories();
-                if (!cart.isCartEmpty()) {
-                    showConfirmOrderMsg();
+                if (!cart.isCartEmpty()) { // 장바구니가 비지 않았다면 [ ORDER MENU ] 창 출력
+                    showOrderConfirmMsg();
                 }
 
+                // 사용자로부터 카테고리 인덱스 번호 입력받음
                 String inputCategoryIndex = sc.next();
                 if ("0".equals(inputCategoryIndex)) {
                     System.out.println("프로그램이 종료되었습니다.");
                     break;
                 }
 
+                // 숫자만 입력했는지 확인
                 validInputValue(inputCategoryIndex);
                 int categoryIndex = Integer.parseInt(inputCategoryIndex);
 
-                // 4나 5를 누름 => 넘어가
+                // [ ORDER MENU ] 인덱스 번호를 누를 경우
                 if (orderIndexList.contains(categoryIndex)) {
-                    // 4번 누르기
+                    // 장바구니 확인 후 주문
                     if (categoryIndex == orderIndex){
                         showOrderListMsg();
                         String orderCompleteIndex = sc.next();
                         if ("1".equals(orderCompleteIndex)){
-                            //여기서 할인 정보를 보여줘야 함
-                            showDiscountInformation();
-                            String input = sc.next();
-                            double total = Discount.fromDiscount(input, cart.getTotal());
-                            cart.completeOrder(total);
+                            completeOrder();
                             break;
                         } else if ("2".equals(orderCompleteIndex)) {
                             continue;
                         } else if ("3".equals(orderCompleteIndex)){
-                            System.out.print("삭제할 메뉴 이름을 입력하세요 : ");
-                            String name = sc.next();
-                            cart.deleteCartItem(name);
+                            cart.deleteCartItem();
                             continue;
                         } else {
                             throw new InvalidInputRangeException();
                         }
 
-                    } else if (categoryIndex == cancelIndex){ //5나 그 이외 값 누르기
+                    // 진행중인 주문 취소 (장바구니 비우기)
+                    } else if (categoryIndex == cancelIndex){
                         cart.cancelCart();
                         continue;
                     } else {
@@ -73,28 +71,29 @@ public class Kiosk {
                     }
                 }
 
+                // [ ORDER MENU ] 인덱스에 포함되지 않은 번호를 누른 경우, 입력값 검증
                 validInputRangeValue(categoryIndex, this.getCategoryIndexList());
-
                 Menu menu = this.menus.get(categoryIndex-1);
                 showSelectedCategoryMenu(menu);
 
-                while (true){
+                while (true) {
+                    // 사용자로부터 [ BURGERS MENU ] 창에서 주문할 메뉴 아이템 인덱스 입력받음
                     String inputMenuIndex = sc.next();
                     if ("0".equals(inputMenuIndex)) {
                         System.out.println("메인 화면으로 돌아갑니다.");
                         break;
                     }
 
+                    // 검증 및 변환
                     validInputValue(inputMenuIndex);
                     int menuIndex = Integer.parseInt(inputMenuIndex);
                     validInputRangeValue(menuIndex, menu.getMenuItemIndexList());
 
                     MenuItem menuItem = menu.getMenuItems().get(menuIndex - 1);
-                    showCartAddMsg(menuItem);
+                    cart.showCartAddMsg(menuItem);
                     String inputCartIndex = sc.next();
                     if ("1".equals(inputCartIndex)){
                         cart.addCart(menuItem);
-                        System.out.println(menuItem.getName() + "이 장바구니에 추가되었습니다.");
                         break;
                     } else if ("2".equals(inputCartIndex)){
                         break;
@@ -110,12 +109,14 @@ public class Kiosk {
 
     }
 
+    // [ MAIN MENU ] 창에서 보여질 인덱스 리스트 세팅
     public void setCategoryIndexList() {
         for(int i = 0; i < menus.size(); i++){
             categoryIndexList.add(i+1);
         }
     }
 
+    // [ ORDER MENU ] 창에서 보여질 인덱스 리스트 세팅, 변수와 리스트에 각각 저장
     public void setOrderIndex() {
         int maxIndex = Collections.max(categoryIndexList);
         orderIndexList.add(maxIndex + 1);
@@ -124,20 +125,25 @@ public class Kiosk {
         cancelIndex = maxIndex + 2;
     }
 
+    // 주문 완료 메서드, 할인 정보를 보여주고 최종 가격을 보여줌
+    public void completeOrder() throws InvalidInputRangeException {
+        showDiscountInformation();
+        String input = sc.next();
+        double total = Discount.fromDiscount(input, cart.getTotal());
+        System.out.println("주문이 완료되었습니다. 금액은 W" + total + " 입니다");
+    }
+
     public List<Integer> getCategoryIndexList() {
         return this.categoryIndexList;
     }
 
-    public void showConfirmOrderMsg() {
+    /*
+    * 키오스크에서 입력 상황에 맞게 출력될 메시지 메서드
+     */
+    public void showOrderConfirmMsg() {
         System.out.println("[ ORDER MENU ]");
         System.out.println( orderIndexList.get(0) + ". Orders       | 장바구니를 확인 후 주문합니다.");
         System.out.println(orderIndexList.get(1) + ". Cancel       | 진행중인 주문을 취소합니다.");
-    }
-
-    public void showCartAddMsg(MenuItem menuItem) {
-        System.out.println("선택한 메뉴 : " + menuItem.getName() + " | W " + menuItem.getPrice() + " | " + menuItem.getDescription());
-        System.out.println("위 메뉴를 장바구니에 추가하시겠습니까?");
-        System.out.println("1. 확인       2. 취소");
     }
 
     public void showOrderListMsg() {
@@ -166,11 +172,14 @@ public class Kiosk {
         Discount.showInformation();
     }
 
+    // 사용자가 숫자만 입력했는지 검증하는 메서드
     private void validInputValue(String inputIndex) throws InvalidInputException {
         if (!inputIndex.matches(NUMBER_REG)){
             throw new InvalidInputException();
         }
     }
+
+    // 사용자가 인덱스 리스트 값에 해당되는 숫자만 입력해는지 검증하는 메서드
     private void validInputRangeValue(int inputIndex, List<Integer> validIndexList) throws InvalidInputRangeException {
         if (!validIndexList.contains(inputIndex)){
             throw new InvalidInputRangeException();
